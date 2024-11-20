@@ -1,4 +1,4 @@
-export default function singupUser(firstName, lastName) {
+export default function singUpUser(firstName, lastName) {
   return Promise.resolve({
     firstName,
     lastName,
