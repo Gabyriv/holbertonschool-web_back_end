@@ -43,14 +43,16 @@ class Server:
 
     def get_page(self, page: int = 1, page_size: int = 10) -> List[List]:
         """
-        Returns a page of data from the dataset based on the page number and page size.
+        Returns a page of data from the dataset
+        based on the page number and page size.
 
         Args:
             page (int): The page number to retrieve.
             page_size (int): The number of items per page.
 
         Returns:
-            List[List]: A list of rows corresponding to the specified page and page size.
+            List[List]: A list of rows corresponding
+            to the specified page and page size.
         """
         start, end = index_range(page, page_size)
         assert isinstance(page, int) and page > 0
