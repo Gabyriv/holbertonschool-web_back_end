@@ -80,13 +80,14 @@ class Server:
             Dict: A dictionary containing the page_size, page, data,
             next_page, prev_page, and total_pages.
         """
-        total_items = len(self.dataset())
         current_page = self.get_page(page, page_size)
+        total_items = len(self.dataset())
+        total_pages = (total_items + page_size - 1) // page_size
         return {
             'page_size': page_size,
             'page': page,
             'data': current_page,
-            'next_page': page + 1 if current_page else None,
+            'next_page': page + 1 if page < total_pages else None,
             'prev_page': page - 1 if page > 1 else None,
-            'total_pages': (total_items + page_size - 1) // page_size,
+            'total_pages': total_pages,
         }
