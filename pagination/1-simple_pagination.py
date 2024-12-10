@@ -54,11 +54,9 @@ class Server:
             List[List]: A list of rows corresponding
             to the specified page and page size.
         """
-        start, end = index_range(page, page_size)
         assert isinstance(page, int) and page > 0
         assert isinstance(page_size, int) and page_size > 0
 
-        if start >= len(self.dataset()):
-            return []
-
-        return self.dataset()[start:end]
+        start, end = index_range(page, page_size)
+        data = self.dataset()
+        return data[start:end] if start < len(data) else []
