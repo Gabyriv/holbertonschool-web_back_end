@@ -1,3 +1,2 @@
-// List all Databases
+// 0. List all Databases
 db.adminCommand({ listDatabases: 1 })
-
