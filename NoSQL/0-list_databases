@@ -1,2 +1,2 @@
 // 0. List all Databases
-db.adminCommand({ listDatabases: 1 })
+show dbs
