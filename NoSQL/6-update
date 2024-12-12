@@ -1,5 +1,5 @@
 // 6. Update
 db.school.updateMany(
-    {name: {$lt: "Holberton school"}},
+    {name: "Holberton school"},
     {$set: { address: "972 Mission Street"}},
 )
