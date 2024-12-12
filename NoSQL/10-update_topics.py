@@ -19,6 +19,6 @@ def update_topics(mongo_collection, name: str, topics: List[str]):
         approached in the school
     """
     return mongo_collection.update_many(
-        {"name": {"$lt": name}},
+        {"name": name},
         {"$set": {"topics": topics}}
     )
