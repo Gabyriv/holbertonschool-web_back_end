@@ -24,8 +24,8 @@ def log_stats():
         method_count = collection.count_documents({"method": f"{method}"})
         print(f"\tmethod {method}: {method_count}")
 
-    status_check = collection.count_documents({"method": "GET", "path": "/status"})
-    print(f"{status_check} status check")
+    status = collection.count_documents({"method": "GET", "path": "/status"})
+    print(f"{status} status check")
 
 
 if __name__ == "__main__":
