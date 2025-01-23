@@ -7,12 +7,18 @@ const app = http.createServer(async (req, res) => {
   if (req.url === '/') {
     res.end('Hello Holberton School!\n');
   } else if (req.url === '/students') {
-    try {
-      const output = await countStudents(process.argv[2]);
-      res.end(`This is the list of our students\n${output}`);
-    } catch (error) {
-      res.end(`${error.message}\n`);
+    if (process.argv[2] !== null) {
+      const message = 'This is the list of our students\n';
+      try {
+        const output = await countStudents(process.argv[2]);
+        res.end(`${message}${output.join('\n')}`);
+      } catch (error) {
+        res.end(`${message}${error.message}\n`);
+      }
     }
+  } else {
+    res.write('Not Found');
+    res.end();
   }
 });
 
