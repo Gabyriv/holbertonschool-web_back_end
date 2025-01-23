@@ -1,34 +1,34 @@
-const fs = require('fs');
+import fs from 'fs';
 
-function readDatabase(path) {
+const readDatabase = (filePath) => {
   return new Promise((resolve, reject) => {
-    fs.readFile(path, 'utf8', (err, data) => {
+    fs.readFile(filePath, 'utf8', (err, data) => {
       if (err) {
-        reject(Error(err));
-        return;
+        reject(Error('Cannot load the database'));
       }
-      const content = data.toString().split('\n');
+      if (data) {
+        const lines = data.toString().split('\n');
+        const studentGroups = {};
+        const dbFieldNames = lines[0].split(',');
+        const studentPropNames = dbFieldNames.map((field) => field.trim());
 
-      let students = content.filter((item) => item);
+        for (const line of lines.slice(1)) {
+          if (line) {
+            const studentRecord = line.split(',');
+            const studentPropValues = studentRecord.map((field) => field.trim());
+            const field = studentPropValues[studentPropNames.indexOf('field')];
+            const firstName = studentPropValues[studentPropNames.indexOf('firstname')];
 
-      students = students.map((item) => item.split(','));
-
-      const fields = {};
-      for (const i in students) {
-        if (i !== 0) {
-          if (!fields[students[i][3]]) fields[students[i][3]] = [];
-
-          fields[students[i][3]].push(students[i][0]);
+            if (!studentGroups[field]) {
+              studentGroups[field] = [];
+            }
+            studentGroups[field].push(firstName);
+          }
         }
+        resolve(studentGroups);
       }
-
-      delete fields.field;
-
-      resolve(fields);
-
-      //   return fields;
     });
   });
-}
+};
 
 export default readDatabase;

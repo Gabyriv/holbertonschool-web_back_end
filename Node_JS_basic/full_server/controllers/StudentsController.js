@@ -1,41 +1,42 @@
 import readDatabase from '../utils';
 
 class StudentsController {
-  static getAllStudents(request, response, database) {
-    readDatabase((database))
-      .then((fields) => {
-        const students = [];
-        let message;
-
-        students.push('This is the list of our students');
-
-        for (const key of Object.keys(fields)) {
-          message = `Number of students in ${key}: ${fields[key].length
-          }. List: ${fields[key].join(', ')}`;
-
-          students.push(message);
+  static getAllStudents(request, response) {
+    readDatabase(process.argv[2])
+      .then((studentGroups) => {
+        const output = ['This is the list of our students'];
+        const sortedFields = Object.keys(studentGroups).sort((a, b) =>
+          a.localeCompare(b, 'en', { sensitivity: 'base' })
+        );
+        
+        for (const field of sortedFields) {
+          output.push(
+            `Number of students in ${field}: ${studentGroups[field].length}. List: ${studentGroups[field].join(', ')}`
+          );
         }
-        response.send(200, `${students.join('\n')}`);
+        response.status(200).send(output.join('\n'));
       })
-      .catch(() => {
-        response.send(500, 'Cannot load the database');
+      .catch((error) => {
+        response.status(500).send(error.message);
       });
   }
 
-  static getAllStudentsByMajor(request, response, database) {
+  static getAllStudentsByMajor(request, response) {
     const { major } = request.params;
 
     if (major !== 'CS' && major !== 'SWE') {
-      response.send(500, 'Major parameter must be CS or SWE');
-    } else {
-      readDatabase(database)
-        .then((fields) => {
-          const students = fields[major];
-
-          response.send(200, `List: ${students.join(', ')}`);
-        })
-        .catch(() => response.send(500, 'Cannot load the database'));
+      response.status(500).send('Major parameter must be CS or SWE');
+      return;
     }
+
+    readDatabase(process.argv[2])
+      .then((studentGroups) => {
+        const students = studentGroups[major] || [];
+        response.status(200).send(`List: ${students.join(', ')}`);
+      })
+      .catch((error) => {
+        response.status(500).send(error.message);
+      });
   }
 }
 
