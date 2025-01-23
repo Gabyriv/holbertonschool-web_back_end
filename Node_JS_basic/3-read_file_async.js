@@ -1,32 +1,35 @@
-const fs = require('fs').promises;
+const fs = require('fs');
 
-const countStudents = async (path) => {
+async function countStudents(path) {
   try {
-    const data = await fs.readFile(path, 'utf8');
-    const lines = data.trim().split('\n');
-    const students = lines.slice(1).filter((line) => line.trim()); // Remove header and empty lines
+    const listCS = [];
+    const listSWE = [];
 
-    let output = `Number of students: ${students.length}\n`;
+    const data = await fs.promises.readFile(path, 'utf8');
 
-    const fields = {};
-    students.forEach((student) => {
-      const [firstname, lastname, age, field] = student.split(',');
-      if (!fields[field]) {
-        fields[field] = { count: 0, students: [] };
-      }
-      fields[field].count += 1;
-      fields[field].students.push(firstname);
-    });
+    const rows = data.trim().split('\n');
 
-    for (const field in fields) {
-      output += `Number of students in ${field}: ${fields[field].count}. List: ${fields[field].students.join(', ')}\n`;
+    for (let i = 1; i < rows.length; i += 1) {
+      const row = rows[i].split(',');
+
+      if (row[3] === 'CS') listCS.push(row[0]);
+      else if (row[3] === 'SWE') listSWE.push(row[0]);
     }
 
-    console.log(output.trim());
-    return output;
-  } catch (error) {
+    console.log(`Number of students: ${rows.length - 1}`);
+    console.log(`Number of students in CS: ${listCS.length}. List: ${listCS.join(', ')}`);
+    console.log(`Number of students in SWE: ${listSWE.length}. List: ${listSWE.join(', ')}`);
+
+
+    const message = [
+      `Number of students: ${rows.length - 1}`,
+      `Number of students in CS: ${listCS.length}. List: ${listCS.join(', ')}`,
+      `Number of students in SWE: ${listSWE.length}. List: ${listSWE.join(', ')}`,
+    ]
+    return message
+  } catch (err) {
     throw new Error('Cannot load the database');
   }
-};
+}
 
 module.exports = countStudents;
