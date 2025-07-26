@@ -4,8 +4,23 @@ Module that filters log messages
 """
 
 import re
-from typing import List
+from typing import List, Tuple
 import logging
+
+
+PII_FIELDS: Tuple[str, ...] = ("name", "email", "phone", "ssn", "password")
+
+
+def get_logger() -> logging.Logger:
+    """
+    Returns a logging.Logger object
+    """
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+    handler = logging.StreamHandler()
+    handler.setFormatter(RedactingFormatter(fields=PII_FIELDS))
+    logger.addHandler(handler)
+    return logger
 
 
 def filter_datum(fields: List[str], redaction: str,
