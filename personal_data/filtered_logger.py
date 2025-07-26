@@ -87,3 +87,35 @@ class RedactingFormatter(logging.Formatter):
         message = super(RedactingFormatter, self).format(record)
         return filter_datum(self.fields, self.REDACTION,
                             message, self.SEPARATOR)
+
+
+def main():
+    """
+    Main function:
+        - Obtains a database connection using get_db
+        - Retrieve all rows in the users table
+        - Display each row under a filtered format
+            - Filtered fields:
+                - name
+                - email
+                - phone
+                - ssn
+                - password
+    """
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM users;")
+    logger = get_logger()
+    logger.info("Retrieving users")
+    for row in cursor:
+        message = (f"name={row[0]}; email={row[1]}; phone={row[2]}; "
+                   f"ssn={row[3]}; password={row[4]}; ip={row[5]}; "
+                   f"last_login={row[6]}; user_agent={row[7]}")
+        logger.info(message)
+    cursor.close()
+    db.close()
+
+
+# Only the main function should run when the module is executed
+if __name__ == "__main__":
+    main()
