@@ -6,9 +6,24 @@ Module that filters log messages
 import re
 from typing import List, Tuple
 import logging
+import os
+import mysql.connector
 
 
 PII_FIELDS: Tuple[str, ...] = ("name", "email", "phone", "ssn", "password")
+
+
+def get_db() -> mysql.connector.connection.MySQLConnection:
+    """
+    Connects to a MySQL database
+    """
+    user = os.getenv("PERSONAL_DATA_DB_USERNAME")
+    password = os.getenv("PERSONAL_DATA_DB_PASSWORD")
+    host = os.getenv("PERSONAL_DATA_DB_HOST")
+    db_name = os.getenv("PERSONAL_DATA_DB_NAME")
+
+    return mysql.connector.connect(user=user, password=password,
+                                   host=host, database=db_name)
 
 
 def get_logger() -> logging.Logger:
