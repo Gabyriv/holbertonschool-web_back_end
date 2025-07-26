@@ -4,9 +4,10 @@ Module that filters log messages
 """
 
 import re
+from typing import List
 
 
-def filter_datum(fields: list[str], redaction: str,
+def filter_datum(fields: List[str], redaction: str,
                  message: str, separator: str) -> str:
     """
     Returns the log message obfuscated
@@ -23,9 +24,12 @@ def filter_datum(fields: list[str], redaction: str,
 
     filter_datum should be less than 5 lines long and
     use re.sub to perform the substitution with a single regex.
+
+    Return:
+        The log message obfuscated
     """
-    # Create a regex pattern that matches any of the fields to obfuscate
-    field_pattern = '|'.join(fields)
-    # Use a single re.sub call to replace all matching fields with redaction
-    return re.sub(f'({field_pattern})=[^{separator}]*{separator}',
-                  f'\\1={redaction}{separator}', message)
+    for field in fields:
+        message = re.sub(f'{field}=.+?{separator}',
+                         f'{field}={redaction}{separator}',
+                         message)
+    return message
