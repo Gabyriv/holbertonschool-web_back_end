@@ -6,7 +6,8 @@ Module that filters log messages
 import re
 
 
-def filter_datum(fields: list[str], redaction: str, message: str, separator: str) -> str:
+def filter_datum(fields: list[str], redaction: str,
+                 message: str, separator: str) -> str:
     """
     Returns the log message obfuscated
 
