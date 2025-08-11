@@ -2,7 +2,7 @@
 """
 Flask app
 """
-from flask import Flask, jsonify, request, abort, Response
+from flask import Flask, jsonify, request, abort, Response, redirect
 from auth import Auth
 
 AUTH = Auth()
@@ -54,6 +54,25 @@ def login() -> Response:
 
     resp = jsonify({"email": email, "message": "logged in"})
     resp.set_cookie("session_id", session_id)
+    return resp
+
+
+@app.route("/sessions", methods=["DELETE"])
+def logout() -> Response:
+    """
+    Log out a user by destroying their session and redirecting to '/'.
+
+    Reads the 'session_id' cookie, finds user; if none, aborts with 403.
+    On success, destroys the session, clears the cookie, and redirects.
+    """
+    session_id = request.cookies.get("session_id")
+    user = AUTH.get_user_from_session_id(session_id)
+    if user is None:
+        abort(403)
+
+    AUTH.destroy_session(user.id)
+    resp = redirect("/")
+    resp.delete_cookie("session_id")
     return resp
 
 
