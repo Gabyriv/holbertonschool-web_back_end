@@ -76,6 +76,20 @@ def logout() -> Response:
     return resp
 
 
+@app.route("/profile", methods=["GET"])
+def profile() -> Response:
+    """
+    Return the profile (email) of the user identified by session cookie.
+
+    Expects 'session_id' cookie. If invalid or user not found, aborts 403.
+    """
+    session_id = request.cookies.get("session_id")
+    user = AUTH.get_user_from_session_id(session_id)
+    if user is None:
+        abort(403)
+    return jsonify({"email": user.email})
+
+
 if __name__ == "__main__":
     """
     Main function
