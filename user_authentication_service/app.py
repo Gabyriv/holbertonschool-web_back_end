@@ -110,6 +110,30 @@ def request_reset_token() -> Response:
     return jsonify({"email": email, "reset_token": token})
 
 
+@app.route("/reset_password", methods=["PUT"])
+def update_password() -> Response:
+    """
+    Update the user's password using a reset token.
+
+    Expects form data: "email", "reset_token", "new_password".
+    If token is invalid or any field missing, aborts 403.
+    On success, returns JSON with confirmation message.
+    """
+    email = request.form.get("email")
+    reset_token = request.form.get("reset_token")
+    new_password = request.form.get("new_password")
+
+    if not email or not reset_token or not new_password:
+        abort(403)
+
+    try:
+        AUTH.update_password(reset_token, new_password)
+    except ValueError:
+        abort(403)
+
+    return jsonify({"email": email, "message": "Password updated"})
+
+
 if __name__ == "__main__":
     """
     Main function
