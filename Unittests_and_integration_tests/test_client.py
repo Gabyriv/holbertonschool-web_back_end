@@ -7,8 +7,9 @@ calls `client.get_json` exactly once with the expected URL.
 
 from typing import Any, Dict
 import unittest
-from parameterized import parameterized
+from parameterized import parameterized, parameterized_class
 from unittest.mock import Mock, patch, PropertyMock
+from fixtures import TEST_PAYLOAD
 
 from client import GithubOrgClient
 
@@ -76,4 +77,65 @@ class TestGithubOrgClient(unittest.TestCase):
         """It returns True only when repo's license key matches."""
         self.assertEqual(
             GithubOrgClient.has_license(repo, license_key), expected
+        )
+
+
+@parameterized_class([
+    {
+        "org_payload": org_payload,
+        "repos_payload": repos_payload,
+        "expected_repos": expected_repos,
+        "apache2_repos": apache2_repos,
+    }
+    for (
+        org_payload,
+        repos_payload,
+        expected_repos,
+        apache2_repos,
+    ) in TEST_PAYLOAD
+])
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """Integration tests for `GithubOrgClient.public_repos`.
+
+    Only external HTTP calls are mocked (requests.get). Internal helpers like
+    `get_json` and memoized properties are exercised as in production.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        """Start patcher for requests.get and set side effects.
+
+        It returns `org_payload` for the org URL and `repos_payload` for the
+        repos URL present in the org payload.
+        """
+        cls.get_patcher = patch("requests.get")
+        cls.mock_get = cls.get_patcher.start()
+
+        def _json_side_effect(url: str, *args: Any, **kwargs: Any) -> Mock:
+            resp = Mock()
+            if url == "https://api.github.com/orgs/google":
+                resp.json.return_value = cls.org_payload
+            elif url == cls.org_payload["repos_url"]:
+                resp.json.return_value = cls.repos_payload
+            else:
+                raise ValueError(f"Unexpected URL: {url}")
+            return resp
+
+        cls.mock_get.side_effect = _json_side_effect
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        """Stop the requests.get patcher."""
+        cls.get_patcher.stop()
+
+    def test_public_repos(self) -> None:
+        """It returns all repo names from the fixture payload."""
+        client = GithubOrgClient("google")
+        self.assertEqual(client.public_repos(), self.expected_repos)
+
+    def test_public_repos_with_license(self) -> None:
+        """It filters repo names by Apache 2.0 license using fixtures."""
+        client = GithubOrgClient("google")
+        self.assertEqual(
+            client.public_repos(license="apache-2.0"), self.apache2_repos
         )
