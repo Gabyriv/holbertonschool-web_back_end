@@ -60,7 +60,6 @@ def get_locale() -> str:
     return match or app.config.get("BABEL_DEFAULT_LOCALE", "en")
 
 
-@babel.timezoneselector
 def get_timezone() -> str:
     """Resolve timezone with priority: URL -> user -> default.
 
