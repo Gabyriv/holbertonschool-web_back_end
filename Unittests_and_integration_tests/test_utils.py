@@ -28,3 +28,18 @@ class TestAccessNestedMap(unittest.TestCase):
     ) -> None:
         """It returns the value at `path` inside `nested_map`."""
         self.assertEqual(access_nested_map(nested_map, path), expected)
+
+    @parameterized.expand([
+        ({}, ("a",), "a"),
+        ({"a": 1}, ("a", "b"), "b"),
+    ])
+    def test_access_nested_map_exception(
+        self,
+        nested_map: Mapping[str, Any],
+        path: Sequence[str],
+        missing_key: str,
+    ) -> None:
+        """It raises KeyError and the message contains the missing key."""
+        with self.assertRaises(KeyError) as cm:
+            access_nested_map(nested_map, path)
+        self.assertEqual(cm.exception.args[0], missing_key)
