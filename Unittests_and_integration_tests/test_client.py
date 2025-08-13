@@ -8,7 +8,7 @@ calls `client.get_json` exactly once with the expected URL.
 from typing import Any, Dict
 import unittest
 from parameterized import parameterized
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, PropertyMock
 
 from client import GithubOrgClient
 
@@ -32,3 +32,13 @@ class TestGithubOrgClient(unittest.TestCase):
         mock_get_json.assert_called_once_with(
             f"https://api.github.com/orgs/{org_name}"
         )
+
+    def test_public_repos_url(self) -> None:
+        """It returns repos_url derived from the mocked `org` property."""
+        expected_repos_url = "https://api.github.com/orgs/google/repos"
+        with patch(
+            "client.GithubOrgClient.org", new_callable=PropertyMock
+        ) as mock_org:
+            mock_org.return_value = {"repos_url": expected_repos_url}
+            client = GithubOrgClient("google")
+            self.assertEqual(client._public_repos_url, expected_repos_url)
