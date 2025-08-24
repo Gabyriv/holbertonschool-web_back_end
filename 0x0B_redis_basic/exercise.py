@@ -36,7 +36,11 @@ class Cache:
         """
         return self.get(key, fn=int)
 
-    def get(self, key: str, fn: Callable = None) -> Optional[Union[str, bytes, int, float]]:
+    def get(
+        self,
+        key: str,
+        fn: Callable = None
+    ) -> Optional[Union[str, bytes, int, float]]:
         """
         Get data from Redis
         """
