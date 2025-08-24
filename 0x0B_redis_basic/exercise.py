@@ -6,6 +6,18 @@ Redis Basic
 import redis
 from typing import Optional, Union, Callable
 import uuid
+from functools import wraps
+
+
+def count_calls(method: Callable) -> Callable:
+    """
+    Count calls
+    """
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        self._redis.incr(method.__qualname__)
+        return method(self, *args, **kwargs)
+    return wrapper
 
 
 class Cache:
@@ -50,3 +62,12 @@ class Cache:
         elif fn is not None:
             return fn(value)
         return value
+
+    @count_calls
+    def store(self, data: Union[str, bytes, int, float]) -> str:
+        """
+        Store data in Redis
+        """
+        key = str(uuid.uuid4())
+        self._redis.set(key, data)
+        return key
