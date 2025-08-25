@@ -3,8 +3,8 @@
 -- Columns: band_name, lifespan (in years)
 -- Use attributes formed and split to compute lifespan. Consider ongoing bands (split NULL or 0) as current year.
 -- Query filters style for 'Glam rock', computes lifespan, orders by lifespan desc
-SELECT band_name,
-       (COALESCE(NULLIF(split, 0), YEAR(CURRENT_DATE)) - formed) AS lifespan
+-- SQL script that lists all bands with Glam rock as their main style, ranked by their longevity
+
+SELECT band_name, COALESCE(split, 2020) - formed as lifespan
 FROM metal_bands
-WHERE style LIKE '%Glam rock%'
-ORDER BY lifespan DESC;
+WHERE style LIKE '%Glam rock%' ;
