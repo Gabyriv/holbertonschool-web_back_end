@@ -4,6 +4,7 @@
 -- Use attributes formed and split to compute lifespan. Consider ongoing bands (split NULL or 0) as current year.
 -- Query filters style for 'Glam rock', computes lifespan, orders by lifespan desc
 SELECT band_name,
-       NULLIF(split, 0), YEAR(CURDATE()) - formed AS lifespan
+       (COALESCE(split, 2025) - formed) AS lifespan
 FROM metal_bands
 WHERE style LIKE '%Glam rock%'
+ORDER BY lifespan DESC;
