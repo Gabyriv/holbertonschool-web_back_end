@@ -1,7 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "dependencies": {
-    "mocha": "^11.7.1"
+    "mocha": "^11.7.1",
+    "sinon": "^21.0.0"
   },
   "scripts": {
     "test": "node run-mocha.js"
