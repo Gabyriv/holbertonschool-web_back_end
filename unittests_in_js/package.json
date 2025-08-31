@@ -5,5 +5,8 @@
   },
   "scripts": {
     "test": "node run-mocha.js"
+  },
+  "devDependencies": {
+    "chai": "^6.0.1"
   }
 }
