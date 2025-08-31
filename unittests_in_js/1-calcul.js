@@ -17,16 +17,18 @@ function calculateNumber(type, a, b) {
   const B = Math.round(b);
 
   switch (type) {
-    case 'SUM':
+    case "SUM":
       return A + B;
-    case 'SUBTRACT':
+    case "SUBTRACT":
       return A - B;
-    case 'DIVIDE':
-      if (B === 0) return 'Error';
+    case "DIVIDE":
+      if (B === 0) return "Error";
       return A / B;
     default:
       // Keep simple, but explicit error helps during development
-      throw new Error(`Invalid type: ${type}. Expected 'SUM', 'SUBTRACT', or 'DIVIDE'.`);
+      throw new Error(
+        `Invalid type: ${type}. Expected 'SUM', 'SUBTRACT', or 'DIVIDE'.`
+      );
   }
 }
 
