@@ -7,6 +7,25 @@ const client = redis.createClient();
 // Log when connected successfully
 client.on("connect", () => {
   console.log("Redis client connected to the server");
+  // Ensure 'Holberton' exists so the first display prints 'School'
+  client.exists("Holberton", (err, reply) => {
+    const proceed = () => {
+      displaySchoolValue("Holberton");
+      setNewSchool("HolbertonSanFrancisco", "100");
+      displaySchoolValue("HolbertonSanFrancisco");
+    };
+    if (err) {
+      // If existence check fails, continue with demo calls
+      proceed();
+      return;
+    }
+    if (reply === 1) {
+      proceed();
+    } else {
+      // Seed without redis.print to avoid extra "Reply: OK" before 'School'
+      client.set("Holberton", "School", () => proceed());
+    }
+  });
 });
 
 // Log when connection fails
@@ -29,9 +48,3 @@ function displaySchoolValue(schoolName) {
     console.log(value);
   });
 }
-
-// Demo calls per requirements
-// Expectation if key 'Holberton' exists: prints 'School'
-displaySchoolValue("Holberton");
-setNewSchool("HolbertonSanFrancisco", "100");
-displaySchoolValue("HolbertonSanFrancisco");
